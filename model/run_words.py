@@ -204,6 +204,7 @@ def train(
         bb_model.train()
         rp_model.train()
         for epoch in range(num_epochs):
+            rationale_extractor.update_step(epoch)
             for batch in train_loader:
 
                 if patience_left == 0:
