@@ -153,10 +153,9 @@ class RationalePredictor(nn.Module):
 class RationaleExtractor:
     tokenizer: PreTrainedTokenizerBase
     device: str
-    step: int = 0
 
     def update_step(self, step: int):
-        self.step = step
+        pass
 
     def extract_from_mask(self, batch, hard_mask):
         # Add CLS tokens
