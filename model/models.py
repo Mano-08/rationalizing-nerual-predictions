@@ -153,6 +153,10 @@ class RationalePredictor(nn.Module):
 class RationaleExtractor:
     tokenizer: PreTrainedTokenizerBase
     device: str
+    step: int = 0
+
+    def update_step(self, step: int):
+        self.step = step
 
     def extract_from_mask(self, batch, hard_mask):
         # Add CLS tokens
@@ -371,6 +375,11 @@ class RationaleExtractorFactory:
     device: str
     data_path: Optional[str] = None
     seed: Optional[int] = None
+    adaptiveNoiseRationaleExtractor: Optional[AdaptiveNoiseRationaleExtractor] = None
+
+    def update_step(self, step: int):
+        if self.adaptiveNoiseRationaleExtractor is not None:
+            self.adaptiveNoiseRationaleExtractor.update_step(step)
 
     def create_extractor(self, inject_noise, num_epochs):
         if inject_noise:
@@ -381,13 +390,15 @@ class RationaleExtractorFactory:
                 strategy="cosine",  # You can also use "exponential" or "linear"
                 warmup_steps=2,  # Optional: maintain high noise for first 2 epochs
             )
-            return AdaptiveNoiseRationaleExtractor(
+            adaptiveNoiseRationaleExtractor = AdaptiveNoiseRationaleExtractor(
                 tokenizer=self.tokenizer,
                 device=self.device,
                 data_path=self.data_path,
                 seed=self.seed,
                 noise_scheduler=noise_scheduler,
             )
+            self.adaptiveNoiseRationaleExtractor = adaptiveNoiseRationaleExtractor
+            return adaptiveNoiseRationaleExtractor
         return RationaleExtractor(tokenizer=self.tokenizer, device=self.device)
 
 
