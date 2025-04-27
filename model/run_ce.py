@@ -90,7 +90,7 @@ def main(args):
     tokenizer = AutoTokenizer.from_pretrained(args.model, use_fast=True)
 
     bb_model = BlackBoxPredictor(
-        num_labels=2, model=args.model, freeze_encoder=args.freeze_encoder_bb
+        num_labels=3, model=args.model, freeze_encoder=args.freeze_encoder_bb
     ).to(args.device)
     print(f"Black Box Predictor: {get_num_params(bb_model)} parameters")
 
