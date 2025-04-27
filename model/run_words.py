@@ -85,7 +85,7 @@ def main(args):
     print(f"Black Box Predictor: {get_num_params(bb_model)} parameters")
 
     rp_model = RationalePredictor(
-        num_labels=2, model=args.model, freeze_encoder=args.freeze_encoder_rp
+        num_labels=3, model=args.model, freeze_encoder=args.freeze_encoder_rp
     ).to(args.device)
     print(f"Rationale Predictor: {get_num_params(rp_model)} parameters")
 
@@ -614,7 +614,7 @@ def evaluate(
         "macro_iou": macro_iou,
         "micro_iou": micro_iou,
         "accuracy": classification_report(
-            y_true, y_pred, labels=[1, 0], digits=4, output_dict=True
+            y_true, y_pred, labels=[2, 1, 0], digits=4, output_dict=True
         )["accuracy"],
     }
 
@@ -648,7 +648,7 @@ def evaluate(
     print(f"Comprehensiveness: {sum(comp)/rtotal:.4f}")
     print(f"Sufficiency: {sum(suff)/rtotal:.4f}")
     print("Classification Report:")
-    print(classification_report(y_true, y_pred, labels=[1, 0], digits=4))
+    print(classification_report(y_true, y_pred, labels=[2, 1, 0], digits=4))
 
 
 def save_results(results, result_path):

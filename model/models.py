@@ -13,9 +13,35 @@ from typing import Literal, Optional
 
 
 def js_div(P, Q):
+    """Calculate Jensen-Shannon divergence between two probability distributions.
+    Handles potential dimension mismatches by ensuring both tensors have same shape.
+    """
+    # Check dimensions and fix if necessary
+    if P.size(1) != Q.size(1):
+        # Determine which tensor needs padding
+        if P.size(1) < Q.size(1):
+            # Pad P to match Q's dimensions
+            padding = torch.zeros(P.size(0), Q.size(1) - P.size(1), device=P.device)
+            P = torch.cat([P, padding], dim=1)
+        else:
+            # Pad Q to match P's dimensions
+            padding = torch.zeros(Q.size(0), P.size(1) - Q.size(1), device=Q.device)
+            Q = torch.cat([Q, padding], dim=1)
+
+    # Ensure distributions sum to 1 after padding
+    P = F.normalize(P, p=1, dim=1)
+    Q = F.normalize(Q, p=1, dim=1)
+
+    # Calculate JS divergence
     M = (P + Q) / 2
     kl_div = lambda X, M: F.kl_div(X.log(), M, reduction="sum")
     return (kl_div(P, M) + kl_div(Q, M)) / 2
+
+
+# def js_div(P, Q):
+#     M = (P + Q) / 2
+#     kl_div = lambda X, M: F.kl_div(X.log(), M, reduction="sum")
+#     return (kl_div(P, M) + kl_div(Q, M)) / 2
 
 
 @dataclass
