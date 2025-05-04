@@ -341,8 +341,8 @@ class AdaptiveNoiseRationaleExtractor(BaseNoisyRationaleExtractor):
         if self.noise_scheduler is None:
             # Default noise scheduler with reasonable values
             self.noise_scheduler = NoiseScheduler(
-                noise_high=0.5,
-                noise_low=0.2,
+                noise_high=0.3,
+                noise_low=0.05,
                 total_steps=10,  # Adjust based on your expected training length
                 strategy="cosine",
             )
@@ -402,11 +402,11 @@ class RationaleExtractorFactory:
     def create_extractor(self, inject_noise, num_epochs):
         if inject_noise:
             noise_scheduler = NoiseScheduler(
-                noise_high=0.3,  # Start with 50% noise
-                noise_low=0.05,  # End with 5% noise
-                total_steps=num_epochs,  # Total training steps/epochs
-                strategy="cosine",  # You can also use "exponential" or "linear"
-                warmup_steps=1,  # Optional: maintain high noise for first 2 epochs
+                noise_high=0.3,
+                noise_low=0.05,
+                total_steps=num_epochs,
+                strategy="cosine",
+                warmup_steps=1,
             )
             adaptiveNoiseRationaleExtractor = AdaptiveNoiseRationaleExtractor(
                 tokenizer=self.tokenizer,
