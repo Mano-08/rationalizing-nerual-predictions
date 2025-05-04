@@ -52,11 +52,11 @@ class NoiseScheduler:
     from high to low as training progresses.
     """
 
-    noise_high: float  # Starting noise level
-    noise_low: float  # Ending noise level
-    total_steps: int  # Total number of training steps/epochs
+    noise_high: float
+    noise_low: float
+    total_steps: int
     strategy: Literal["cosine", "exponential", "linear"] = "cosine"
-    warmup_steps: int = 0  # Optional warmup period with max noise
+    warmup_steps: int = 0
 
     def __post_init__(self):
         assert (
@@ -74,36 +74,29 @@ class NoiseScheduler:
         Returns:
             Current noise level between noise_high and noise_low
         """
-        # During warmup, use maximum noise
         if current_step < self.warmup_steps:
             return self.noise_high
 
-        # Adjust step to account for warmup
         adjusted_step = current_step - self.warmup_steps
         adjusted_total = self.total_steps - self.warmup_steps
 
-        # Ensure we don't divide by zero if total_steps equals warmup_steps
         if adjusted_total <= 0:
             return self.noise_low
 
-        # Normalize progress between 0 and 1
         progress = min(adjusted_step / adjusted_total, 1.0)
 
         if self.strategy == "cosine":
-            # Cosine annealing: smooth transition with slower decay in the middle
             cosine_decay = 0.5 * (1 + math.cos(math.pi * progress))
             return self.noise_low + (self.noise_high - self.noise_low) * cosine_decay
 
         elif self.strategy == "exponential":
-            # Exponential decay: faster initial decay, then gradual approach to minimum
-            decay_rate = 3  # Controls decay speed, higher = faster decay
+            decay_rate = 3
             exponential_decay = math.exp(-decay_rate * progress)
             return (
                 self.noise_low + (self.noise_high - self.noise_low) * exponential_decay
             )
 
-        else:  # linear
-            # Linear decay: constant rate of decrease
+        else:
             return self.noise_high - progress * (self.noise_high - self.noise_low)
 
 
@@ -409,10 +402,10 @@ class RationaleExtractorFactory:
     def create_extractor(self, inject_noise, num_epochs):
         if inject_noise:
             noise_scheduler = NoiseScheduler(
-                noise_high=0.5,  # Start with 50% noise
-                noise_low=0.2,  # End with 5% noise
+                noise_high=0.4,  # Start with 50% noise
+                noise_low=0.1,  # End with 5% noise
                 total_steps=num_epochs,  # Total training steps/epochs
-                strategy="cosine",  # You can also use "exponential" or "linear"
+                strategy="exponential",  # You can also use "exponential" or "linear"
                 warmup_steps=2,  # Optional: maintain high noise for first 2 epochs
             )
             adaptiveNoiseRationaleExtractor = AdaptiveNoiseRationaleExtractor(
