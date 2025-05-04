@@ -40,7 +40,7 @@ def parse_args():
     parser.add_argument("--freeze_encoder_bb", action="store_true")
     parser.add_argument("--freeze_encoder_rp", action="store_true")
     # Training
-    parser.add_argument("--num_epochs", type=int, default=5)
+    parser.add_argument("--num_epochs", type=int, default=20)
     # Patience
     parser.add_argument("--patience", type=int, default=2)
     # Model proximity hyperparameter
