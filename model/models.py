@@ -402,11 +402,11 @@ class RationaleExtractorFactory:
     def create_extractor(self, inject_noise, num_epochs):
         if inject_noise:
             noise_scheduler = NoiseScheduler(
-                noise_high=0.4,  # Start with 50% noise
-                noise_low=0.1,  # End with 5% noise
+                noise_high=0.3,  # Start with 50% noise
+                noise_low=0.05,  # End with 5% noise
                 total_steps=num_epochs,  # Total training steps/epochs
-                strategy="exponential",  # You can also use "exponential" or "linear"
-                warmup_steps=2,  # Optional: maintain high noise for first 2 epochs
+                strategy="cosine",  # You can also use "exponential" or "linear"
+                warmup_steps=1,  # Optional: maintain high noise for first 2 epochs
             )
             adaptiveNoiseRationaleExtractor = AdaptiveNoiseRationaleExtractor(
                 tokenizer=self.tokenizer,
